@@ -29,7 +29,7 @@ namespace LightestNight.System.Serverless.AWS.CloudWatch
             _cloudWatchLogs = new AmazonCloudWatchLogsClient(RegionEndpoint.GetBySystemName(region));
         }
 
-        protected async Task Subscribe()
+        protected virtual async Task Process()
         {
             var logGroups = await GetLogGroups();
             await SubscribeAll(logGroups);

@@ -23,7 +23,7 @@ namespace LightestNight.System.Serverless.AWS.CloudWatch
             _logger = logger;
         }
 
-        protected async Task Ship(KinesisEvent @event)
+        protected virtual async Task Ship(KinesisEvent @event)
         {
             try
             {
