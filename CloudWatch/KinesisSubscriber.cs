@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Amazon;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
+using Amazon.Lambda.APIGatewayEvents;
+using LightestNight.System.Serverless.AWS.ApiGateway;
 using Newtonsoft.Json;
 
 namespace LightestNight.System.Serverless.AWS.CloudWatch
@@ -27,6 +29,15 @@ namespace LightestNight.System.Serverless.AWS.CloudWatch
             _retentionDays = retentionDays;
             
             _cloudWatchLogs = new AmazonCloudWatchLogsClient(RegionEndpoint.GetBySystemName(region));
+        }
+
+        protected virtual async Task<APIGatewayProxyResponse> Subscribe()
+        {
+            Console.WriteLine("Subscriber Start");
+            await Process();
+            Console.WriteLine("Subscriber Done");
+
+            return ApiResponse.Ok(new {Message = "Subscription Successful"});
         }
 
         protected virtual async Task Process()
