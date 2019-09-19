@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <AssemblyName>LightestNight.System.Serverless.AWS.CloudWatch</AssemblyName>
+        <RootNamespace>LightestNight.System.Serverless.AWS.CloudWatch</RootNamespace>
+        <LangVersion>latest</LangVersion>
+        <IsPackable>true</IsPackable>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <PackageId>LightestNight.System.Serverless.Aws.CloudWatch</PackageId>
+        <Authors>James Woodley</Authors>
+        <Company>LightestNight Ltd</Company>
+        <Title>LightestNight :: System :: Serverless :: AWS :: CloudWatch</Title>
+        <Description>Utilities and helper functions for integrating with CloudWatch logs. Strongest use case is streaming logs to Kinesis to then ship to a centralised logging solution.</Description>
+        <PackageTags>lightestnight;system;infrastructure;serverless;aws;cloudwatch</PackageTags>
+        <Version>1.0.0</Version>
+        <PackageVersion>1.0.0</PackageVersion>
+        <AssemblyVersion>1.0.0</AssemblyVersion>
+        <FileVersion>1.0.0</FileVersion>
+        <InformationalVersion>1.0.0</InformationalVersion>
+        <PackageIconUrl>https://www.gravatar.com/avatar/01d9ae6081c5243ef46b38dc4056f9d8</PackageIconUrl>
+        <RepositoryUrl>https://github.com/lightestnight/system.serverless.aws.cloudwatch</RepositoryUrl>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Amazon.Lambda.KinesisEvents" Version="1.1.0" />
+      <PackageReference Include="AWSSDK.CloudWatchLogs" Version="3.3.101.24" />
+      <PackageReference Include="Humanizer.Core" Version="2.7.2" />
+      <PackageReference Include="LightestNight.System.Logging" Version="1.3.0" />
+      <PackageReference Include="LightestNight.System.Serverless.Aws.ApiGateway" Version="1.7.0" />
+      <PackageReference Include="LightestNight.System.Serverless.Aws.Kinesis" Version="1.0.0" />
+    </ItemGroup>
+
+</Project>
