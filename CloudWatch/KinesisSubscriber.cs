@@ -37,7 +37,7 @@ namespace LightestNight.System.Serverless.AWS.CloudWatch
             await Process();
             Console.WriteLine("Subscriber Done");
 
-            return ApiResponse.Ok(new {Message = "Subscription Successful"});
+            return ApiGatewayResponse.Ok(new {Message = "Subscription Successful"});
         }
 
         protected virtual async Task Process()
