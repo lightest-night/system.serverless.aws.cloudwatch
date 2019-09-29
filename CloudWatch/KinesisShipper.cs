@@ -78,7 +78,7 @@ namespace LightestNight.System.Serverless.AWS.CloudWatch
 
             const string type = "Lambda";
             const string structuredLogPattern = "[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9]Z([ \t])[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}([ \t])(.*)";
-            const string exceptionStarter = "Exception: {";
+            var exceptionStarterRegex = new Regex("^Exception: {", RegexOptions.Multiline | RegexOptions.IgnoreCase);
             var regexError = new Regex("error", RegexOptions.IgnoreCase);
             var regexException = new Regex("exception", RegexOptions.IgnoreCase);
             var regexConfigurationError = new Regex("module initialization error|unable to import module", RegexOptions.IgnoreCase);
@@ -87,7 +87,7 @@ namespace LightestNight.System.Serverless.AWS.CloudWatch
 
             LogData CheckLogError(LogData log)
             {
-                if (regexException.IsMatch(message) && message.StartsWith(exceptionStarter, StringComparison.InvariantCultureIgnoreCase))
+                if (regexException.IsMatch(message) && exceptionStarterRegex.IsMatch(message))
                 {
                     log.Title = $"A {ErrorType.Runtime.Humanize()} error occurred in {log.Function}";
                     log.Severity = LogLevel.Critical;
