@@ -9,6 +9,7 @@ using Amazon.Lambda.KinesisEvents;
 using Humanizer;
 using LightestNight.System.Logging;
 using LightestNight.System.Serverless.Kinesis;
+using LightestNight.System.Utilities.Extensions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -77,14 +78,22 @@ namespace LightestNight.System.Serverless.AWS.CloudWatch
 
             const string type = "Lambda";
             const string structuredLogPattern = "[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9]Z([ \t])[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}([ \t])(.*)";
-            var regexError = new Regex("error|exception", RegexOptions.IgnoreCase);
+            const string exceptionStarter = "Exception: {";
+            var regexError = new Regex("error", RegexOptions.IgnoreCase);
+            var regexException = new Regex("exception", RegexOptions.IgnoreCase);
             var regexConfigurationError = new Regex("module initialization error|unable to import module", RegexOptions.IgnoreCase);
             var regexTimeoutError = new Regex("task timed out|process exited before completing", RegexOptions.IgnoreCase);
             var regexStructuredLog = new Regex(structuredLogPattern);
 
             LogData CheckLogError(LogData log)
             {
-                if (regexError.IsMatch(log.Message))
+                if (regexException.IsMatch(message) && message.StartsWith(exceptionStarter, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    log.Title = $"A {ErrorType.Runtime.Humanize()} error occurred in {log.Function}";
+                    log.Severity = LogLevel.Critical;
+                    log.ErrorType = ErrorType.Runtime;
+                    log.Exception = message.ExtractObject<Exception>();
+                } else if (regexError.IsMatch(log.Message))
                 {
                     log.Title = $"A {ErrorType.Runtime.Humanize()} error occurred in {log.Function}";
                     log.Severity = LogLevel.Error;
@@ -103,7 +112,7 @@ namespace LightestNight.System.Serverless.AWS.CloudWatch
 
                 return log;
             }
-
+            
             if (!regexStructuredLog.IsMatch(message))
             {
                 return CheckLogError(new LogData
