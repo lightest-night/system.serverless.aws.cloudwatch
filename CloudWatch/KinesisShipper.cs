@@ -9,6 +9,7 @@ using Amazon.Lambda.KinesisEvents;
 using Humanizer;
 using LightestNight.System.Logging;
 using LightestNight.System.Serverless.Kinesis;
+using LightestNight.System.Utilities;
 using LightestNight.System.Utilities.Extensions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -30,9 +31,7 @@ namespace LightestNight.System.Serverless.AWS.CloudWatch
             {
                 var logs = (await ParseLogs(@event)).ToArray();
                 if (logs.Any())
-                {
                     await Task.WhenAll(logs.Select(log => _logger(log)));
-                }
             }
             catch (Exception ex)
             {
@@ -73,7 +72,8 @@ namespace LightestNight.System.Serverless.AWS.CloudWatch
         {
             if (message.StartsWith("START RequestId", StringComparison.InvariantCultureIgnoreCase) ||
                 message.StartsWith("END RequestId", StringComparison.InvariantCultureIgnoreCase) ||
-                message.StartsWith("REPORT RequestId", StringComparison.InvariantCultureIgnoreCase))
+                message.StartsWith("REPORT RequestId", StringComparison.InvariantCultureIgnoreCase) ||
+                string.IsNullOrEmpty(message))
                 return null;
 
             const string type = "Lambda";
@@ -92,7 +92,7 @@ namespace LightestNight.System.Serverless.AWS.CloudWatch
                     log.Title = $"A {ErrorType.Runtime.Humanize()} error occurred in {log.Function}";
                     log.Severity = LogLevel.Critical;
                     log.ErrorType = ErrorType.Runtime;
-                    log.Exception = message.ExtractObject<Exception>();
+                    log.Exception = message.ExtractObject() as LightestNightException;
                 } else if (regexError.IsMatch(log.Message))
                 {
                     log.Title = $"A {ErrorType.Runtime.Humanize()} error occurred in {log.Function}";
